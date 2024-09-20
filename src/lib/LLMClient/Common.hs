@@ -1,19 +1,27 @@
 module LLMClient.Common
   where
 
+import Data.Aeson ( ToJSON )
 import Data.Text.Lazy qualified as TL
+import GHC.Generics ( Generic )
 
 
-data Model = Llama3_1_8b
+data Model = Model TL.Text
+  deriving Generic
 
-instance Show Model where
-  show Llama3_1_8b = "llama3.1:8b"
+instance ToJSON Model
 
 
 newtype Prompt = Prompt TL.Text
+  deriving Generic
+
+instance ToJSON Prompt
 
 
 newtype Stream = Stream Bool
+  deriving Generic
+
+instance ToJSON Stream
 
 
 data OllamaRequest = OllamaRequest
@@ -21,3 +29,10 @@ data OllamaRequest = OllamaRequest
   , prompt :: Prompt
   , stream :: Stream
   }
+  deriving Generic
+
+instance ToJSON OllamaRequest
+
+
+mkGenericRequest :: TL.Text -> OllamaRequest
+mkGenericRequest promptText = OllamaRequest (Model "llama3.1:8b") (Prompt promptText) (Stream False)

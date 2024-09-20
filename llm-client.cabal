@@ -65,11 +65,13 @@ library
   import: lang
   exposed-modules:
       LLMClient.Common
+      LLMClient.Http
   hs-source-dirs:
     src/lib
   build-depends:
-      curl
+      aeson
     , text
+    , wreq
 
 executable llm-client
   import: lang
