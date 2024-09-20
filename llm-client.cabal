@@ -63,12 +63,13 @@ common lang
 
 library
   import: lang
-  -- exposed-modules:
-  --     Example
+  exposed-modules:
+      LLMClient.Common
   hs-source-dirs:
     src/lib
   build-depends:
       curl
+    , text
 
 executable llm-client
   import: lang
