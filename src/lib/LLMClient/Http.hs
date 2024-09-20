@@ -8,6 +8,8 @@ import Data.Text.IO qualified as TS
 import Lens.Micro  -- FIXME
 import Network.Wreq  -- FIXME
 
+import LLMClient.Common
+
 
 doCompletion :: OllamaRequest -> IO (Maybe Value)
 doCompletion or' = do

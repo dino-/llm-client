@@ -82,6 +82,7 @@ executable llm-client
     src/app
   build-depends:
       llm-client
+    , text
 
 -- test-suite basic-wrk-test-suite
 --   import: lang
