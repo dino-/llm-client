@@ -1,0 +1,5 @@
+# stack uses this directory for build artifacts
+/.stack-work/
+
+# Made by 'hasktags --ctags .'
+tags
