@@ -70,6 +70,8 @@ library
     src/lib
   build-depends:
       aeson
+    , lens-aeson
+    , microlens
     , text
     , wreq
 

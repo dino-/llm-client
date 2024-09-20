@@ -1,14 +1,25 @@
 module LLMClient.Http
   where
 
-import Data.Aeson ( toJSON )
+import Data.Aeson ( Value (String), toJSON )
+import Data.Aeson.Lens  -- FIXME
+-- import Data.ByteString.Lazy qualified as BL
+import Data.Text.IO qualified as TS
+import Lens.Micro  -- FIXME
 import Network.Wreq  -- FIXME
 
 
--- doCompletion :: OllamaRequest -> IO (CurlCode, String)
-doCompletion or = do
+doCompletion :: OllamaRequest -> IO (Maybe Value)
+doCompletion or' = do
   let url = "http://localhost:11434/api/generate"
-  post url $ toJSON or
+  response <- post url $ toJSON or'
+  pure $ response ^? responseBody . key "response"
+
+
+display :: Maybe Value -> IO ()
+display response = case response of
+  (Just (String t)) -> TS.putStrLn t
+  badResponse -> putStrLn $ "Something bad happened:\n" <> show badResponse
 
 
 -- import Control.Monad.Except ( MonadError, throwError )
