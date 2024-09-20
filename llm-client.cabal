@@ -56,10 +56,6 @@ common lang
     -Wredundant-constraints
   build-depends:
       base >=3 && <5
-  -- other-modules:
-  --   Paths_llm-client
-  -- autogen-modules:
-  --   Paths_llm-client
 
 library
   import: lang
@@ -80,8 +76,17 @@ executable llm-client
   main-is: Main.hs
   hs-source-dirs:
     src/app
+  other-modules:
+    LLMClient.Opts
+    Paths_llm_client
+  autogen-modules:
+    Paths_llm_client
   build-depends:
-      llm-client
+      formatting
+    , heredoc
+    , llm-client
+    , optparse-applicative
+    , prettyprinter
     , text
 
 -- test-suite basic-wrk-test-suite

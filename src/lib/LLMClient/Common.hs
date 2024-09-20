@@ -1,3 +1,5 @@
+{-# LANGUAGE DuplicateRecordFields, OverloadedRecordDot #-}
+
 module LLMClient.Common
   where
 
@@ -34,5 +36,17 @@ data OllamaRequest = OllamaRequest
 instance ToJSON OllamaRequest
 
 
-mkGenericRequest :: TL.Text -> OllamaRequest
-mkGenericRequest promptText = OllamaRequest (Model "llama3.1:8b") (Prompt promptText) (Stream False)
+mkLLMRequest :: Options -> TL.Text -> OllamaRequest
+mkLLMRequest opts promptText = OllamaRequest opts.model (Prompt promptText) opts.stream
+
+
+newtype Host = Host TL.Text
+
+newtype System = System (Maybe TL.Text)
+
+data Options = Options
+  { host :: Host
+  , system :: System
+  , model :: Model
+  , stream :: Stream
+  }
