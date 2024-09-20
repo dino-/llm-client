@@ -1,12 +1,11 @@
-{-# LANGUAGE QuasiQuotes #-}
-{- # LANGUAGE DuplicateRecordFields, QuasiQuotes #-}
+{-# LANGUAGE DuplicateRecordFields, OverloadedRecordDot, QuasiQuotes #-}
 
 module LLMClient.Opts
   ( parseOpts
   )
   where
 
-import Data.Text.Lazy ( pack )
+import Data.Text.Lazy ( pack, unpack )
 import Data.Version ( showVersion )
 import Formatting ( (%), format, formatToString )
 import Formatting.ShortFormatters ( t )
@@ -17,7 +16,7 @@ import System.Environment ( getProgName )
 import Text.Heredoc ( here )
 
 import LLMClient.Common ( Host (..), Model (..), Options (Options),
-  Stream (..), System (..) )
+  Stream (..), System (..), defaultHost, defaultModel )
 
 
 parser :: Parser Options
@@ -28,7 +27,7 @@ parser = Options
         <> metavar "HOST:PORT"
         <> help "Host and port where ollama serve is running"
         <> showDefault
-        <> value "localhost:11434"
+        <> (value . unpack $ defaultHost.v)
         )
       )
   <*> ( System . maybe Nothing (Just . pack) <$> optional (option auto
@@ -44,7 +43,7 @@ parser = Options
         <> metavar "MODEL_ID"
         <> help "Model identifier, see available models with `ollama list`"
         <> showDefault
-        <> value "llama3.1:8b"
+        <> (value . unpack $ defaultModel.v )
         )
       )
   <*> ( Stream <$> switch
