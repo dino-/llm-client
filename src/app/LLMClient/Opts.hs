@@ -52,7 +52,7 @@ parser = Options
         (  long "option"
         <> short 'o'
         <> metavar "KEY:VALUE"
-        <> help "Options for the LLM, repeat for each option pair. Commonly used: temperature:DOUBLE"
+        <> help "Options for the LLM, repeat for each option pair. See LLM OPTIONS below"
         )
       ))
   <*> ( Stream <$> switch
@@ -88,8 +88,17 @@ parseOpts = do
 
 footer' :: InfoMod a
 footer' = footerDoc . Just . pretty . format content . pack . showVersion $ version
-  where content = [here|OVERVIEW
+  where content = [here|LLM OPTIONS
 
-llm-client is a tool for...
+Some settings are communicated to the LLM as a map of options. Use them like this
+
+    -o temperature:0.2
+
+Some popular options:
+
+    key               description
+    ----------------------------------------------
+    temperature       DOUBLE between 0.0 and 1.0
+    presence_penalty  DOUBLE between 0.0 and 1.0
 
 Version |] % t % "  Dino Morelli <dino@ui3.info>"
