@@ -35,6 +35,7 @@ instance ToJSON Stream
 
 data OllamaRequest = OllamaRequest
   { model :: Model
+  , system :: System
   , prompt :: Prompt
   , stream :: Stream
   , options :: Maybe Value
@@ -45,7 +46,8 @@ instance ToJSON OllamaRequest
 
 
 mkLLMRequest :: Options -> TL.Text -> OllamaRequest
-mkLLMRequest opts promptText = OllamaRequest opts.model (Prompt promptText) opts.stream (wrapMaybe opts.llmOptions.v)
+mkLLMRequest opts promptText = OllamaRequest opts.model opts.system
+  (Prompt promptText) opts.stream (wrapMaybe opts.llmOptions.v)
   where
     wrapMaybe o@(Object _) = if o == emptyObject then Nothing else Just o
     wrapMaybe _ = Nothing
@@ -57,6 +59,9 @@ defaultHost :: String
 defaultHost = "localhost:11434"
 
 newtype System = System (Maybe TL.Text)
+  deriving Generic
+
+instance ToJSON System
 
 newtype RawOutput = RawOutput Bool
 

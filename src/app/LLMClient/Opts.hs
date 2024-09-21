@@ -31,7 +31,7 @@ parser = Options
         <> value defaultHost
         )
       )
-  <*> ( System . maybe Nothing (Just . pack) <$> optional (option auto
+  <*> ( System . maybe Nothing (Just . pack) <$> ( optional $ strOption
         (  long "system"
         <> short 's'
         <> metavar "STR"
@@ -80,7 +80,7 @@ parseOpts :: IO Options
 parseOpts = do
   pn <- getProgName
   execParser $ info (parser <**> helper <**> versionHelper pn)
-    (  header (formatToString (t % " - Calculations using gathered Glenwood South noise complaints") (pack pn))
+    (  header (formatToString (t % " - Command line tool for interacting with an ollama server") (pack pn))
     <> footer'
     )
 
