@@ -5,7 +5,7 @@ module LLMClient.Opts
   )
   where
 
-import Data.Text.Lazy ( pack, unpack )
+import Data.Text.Lazy ( pack )
 import Data.Version ( showVersion )
 import Formatting ( (%), format, formatToString )
 import Formatting.ShortFormatters ( t )
@@ -27,7 +27,7 @@ parser = Options
         <> metavar "HOST:PORT"
         <> help "Host and port where ollama serve is running"
         <> showDefault
-        <> (value . unpack $ defaultHost.v)
+        <> value defaultHost
         )
       )
   <*> ( System . maybe Nothing (Just . pack) <$> optional (option auto
@@ -43,7 +43,7 @@ parser = Options
         <> metavar "MODEL_ID"
         <> help "Model identifier, see available models with `ollama list`"
         <> showDefault
-        <> (value . unpack $ defaultModel.v )
+        <> value defaultModel
         )
       )
   <*> ( Stream <$> switch

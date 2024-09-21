@@ -8,13 +8,13 @@ import Data.Text.Lazy qualified as TL
 import GHC.Generics ( Generic )
 
 
-data Model = Model { v :: TL.Text }
+data Model = Model TL.Text
   deriving Generic
 
 instance ToJSON Model
 
-defaultModel :: Model
-defaultModel = Model "llama3.1:8b"
+defaultModel :: String
+defaultModel = "llama3.1:8b"
 
 
 newtype Prompt = Prompt TL.Text
@@ -43,10 +43,10 @@ mkLLMRequest :: Options -> TL.Text -> OllamaRequest
 mkLLMRequest opts promptText = OllamaRequest opts.model (Prompt promptText) opts.stream
 
 
-newtype Host = Host { v :: TL.Text }
+newtype Host = Host TL.Text
 
-defaultHost :: Host
-defaultHost = Host "localhost:11434"
+defaultHost :: String
+defaultHost = "localhost:11434"
 
 newtype System = System (Maybe TL.Text)
 
