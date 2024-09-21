@@ -16,7 +16,8 @@ import System.Environment ( getProgName )
 import Text.Heredoc ( here )
 
 import LLMClient.Common ( Host (..), Model (..), Options (Options),
-  RawOutput (..), Stream (..), System (..), defaultHost, defaultModel )
+  RawOutput (..), Stream (..), System (..), convertOptions, defaultHost,
+  defaultModel )
 
 
 parser :: Parser Options
@@ -46,6 +47,13 @@ parser = Options
         <> value defaultModel
         )
       )
+  <*> ( convertOptions <$> ( many $ strOption
+        (  long "option"
+        <> short 'o'
+        <> metavar "KEY:VALUE"
+        <> help "Options for the LLM, repeat for each option pair. Commonly used: temperature:DOUBLE"
+        )
+      ))
   <*> ( Stream <$> switch
         (  long "stream"
         <> help "Response will be returned as a stream of objects"

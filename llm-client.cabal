@@ -69,6 +69,7 @@ library
     , bytestring
     , lens-aeson
     , microlens
+    , string-conv
     , text
     , wreq
 
