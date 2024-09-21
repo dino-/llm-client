@@ -20,6 +20,7 @@ import LLMClient.Common ( Host (..), Model (..), Options (Options),
   defaultModel )
 
 
+{- HLINT ignore "Functor law" -}
 parser :: Parser Options
 parser = Options
   <$> ( Host . pack <$> strOption
@@ -31,7 +32,7 @@ parser = Options
         <> value defaultHost
         )
       )
-  <*> ( System . maybe Nothing (Just . pack) <$> ( optional $ strOption
+  <*> ( System . fmap pack <$> optional ( strOption
         (  long "system"
         <> short 's'
         <> metavar "STR"
@@ -47,7 +48,7 @@ parser = Options
         <> value defaultModel
         )
       )
-  <*> ( convertOptions <$> ( many $ strOption
+  <*> ( convertOptions <$> many ( strOption
         (  long "option"
         <> short 'o'
         <> metavar "KEY:VALUE"

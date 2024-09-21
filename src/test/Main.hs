@@ -22,8 +22,9 @@ unitTests = testGroup "unit tests"
   ]
 
 
+{- HLINT ignore "Avoid reverse" -}
 quickcheckProperties :: TestTree
 quickcheckProperties = testGroup "quickcheck properties"
-  [ testProperty "reverse twice results in the same list" $
+  [ testProperty "reverse twice results in the same list"
       ((\l -> (reverse . reverse $ l) == l) :: [Char] -> Bool)
   ]

@@ -12,7 +12,7 @@ import Data.Text.Lazy qualified as TL
 import GHC.Generics ( Generic )
 
 
-data Model = Model TL.Text
+newtype Model = Model TL.Text
   deriving Generic
 
 instance ToJSON Model
@@ -84,7 +84,7 @@ debugOptsJSON :: LLMOptions -> Value
 debugOptsJSON = toJSON
 
 convertOptions :: [String] -> LLMOptions
-convertOptions rawStrings = LLMOptions . object . pairs' $ rawStrings
+convertOptions = LLMOptions . object . pairs'
 
 pairs' :: [String] -> [Pair]
 pairs' = map (convertTypes . (takeWhile (/= ':') &&& (tail . dropWhile (/= ':'))))

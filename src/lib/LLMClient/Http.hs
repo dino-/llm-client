@@ -18,7 +18,7 @@ doCompletion or' = do
   pure $ response ^? responseBody
 
 
-display :: RawOutput -> (Maybe BL.ByteString) -> IO ()
+display :: RawOutput -> Maybe BL.ByteString -> IO ()
 
 display (RawOutput True) (Just bs) = BL.putStr bs
 
