@@ -2,13 +2,13 @@ module LLMClient.Http
   where
 
 import Data.Aeson ( Value (String), toJSON )
-import Data.Aeson.Lens  -- FIXME
+import Data.Aeson.Lens ( key )
 import Data.ByteString.Lazy qualified as BL
 import Data.Text.IO qualified as TS
-import Lens.Micro  -- FIXME
-import Network.Wreq  -- FIXME
+import Lens.Micro ( (^?) )
+import Network.Wreq ( post, responseBody )
 
-import LLMClient.Common
+import LLMClient.Common ( OllamaRequest, RawOutput (..) )
 
 
 doCompletion :: OllamaRequest -> IO (Maybe BL.ByteString)
