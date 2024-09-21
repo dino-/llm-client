@@ -50,9 +50,12 @@ defaultHost = "localhost:11434"
 
 newtype System = System (Maybe TL.Text)
 
+newtype RawOutput = RawOutput Bool
+
 data Options = Options
   { host :: Host
   , system :: System
   , model :: Model
   , stream :: Stream
+  , rawOutput :: RawOutput
   }

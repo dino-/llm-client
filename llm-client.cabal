@@ -66,6 +66,7 @@ library
     src/lib
   build-depends:
       aeson
+    , bytestring
     , lens-aeson
     , microlens
     , text

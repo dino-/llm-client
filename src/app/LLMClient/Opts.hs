@@ -16,7 +16,7 @@ import System.Environment ( getProgName )
 import Text.Heredoc ( here )
 
 import LLMClient.Common ( Host (..), Model (..), Options (Options),
-  Stream (..), System (..), defaultHost, defaultModel )
+  RawOutput (..), Stream (..), System (..), defaultHost, defaultModel )
 
 
 parser :: Parser Options
@@ -49,6 +49,12 @@ parser = Options
   <*> ( Stream <$> switch
         (  long "stream"
         <> help "Response will be returned as a stream of objects"
+        )
+      )
+  <*> ( RawOutput <$> switch
+        (  long "raw-output"
+        <> short 'r'
+        <> help "Output the entire JSON response from the LLM"
         )
       )
 
