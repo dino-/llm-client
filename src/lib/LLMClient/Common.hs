@@ -98,6 +98,5 @@ pairs' :: [String] -> [Pair]
 pairs' = map (convertTypes . (takeWhile (/= ':') &&& (tail . dropWhile (/= ':'))))
 
 convertTypes :: (String, String) -> (Key, Value)
-convertTypes (keystr@"temperature", valstr) = (fromString keystr, Number . read $ valstr)
-convertTypes (keystr@"presence_penalty", valstr) = (fromString keystr, Number . read $ valstr)
-convertTypes (keystr, valstr) = (fromString keystr, String . toS $ valstr)
+convertTypes (keystr@"stop", valstr) = (fromString keystr, String . toS $ valstr)
+convertTypes (keystr, valstr) = (fromString keystr, Number . read $ valstr)

@@ -95,11 +95,23 @@ Some settings are communicated to the LLM as a map of options. Use them like thi
 
     -o temperature:0.2
 
-A popular option is 'temperature' which is a DOUBLE between 0.0 and 1.0 where
+Some useful options
 
-    0.0       deterministic
-    0.1 - 1.0 increasing creativity
+    option name   description                                                   default
+    -------------------------------------------------------------------------------------
+    seed          Sets the random number seed to use for generation. Setting    0
+                  this to a specific number will make the model generate the
+                  same text for the same prompt.
+    temperature   The temperature of the model. Increasing the temperature      0.8
+                  will make the model answer more creatively.
+                  Range 0.0 to 1.0
+    top_k         Reduces the probability of generating nonsense. A higher      40
+                  value (e.g. 100) will give more diverse answers, while a
+                  lower value (e.g. 10) will be more conservative.
+                  Range 0 to 100
 
-The default temperature is 0.8
+For the complete list of LLM options, see
+
+https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values
 
 Version |] % t % "  Dino Morelli <dino@ui3.info>"
