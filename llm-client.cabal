@@ -62,11 +62,13 @@ library
   exposed-modules:
       LLMClient.Common
       LLMClient.HTTP
+      LLMClient.System.Log
   hs-source-dirs:
     src/lib
   build-depends:
       aeson
     , bytestring
+    , hslogger
     , lens-aeson
     , microlens
     , string-conv
