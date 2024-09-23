@@ -4,7 +4,10 @@ module LLMClient.Common
   where
 
 import Control.Arrow ( (&&&) )
-import Data.Aeson ( Key, ToJSON, Value (Number, Object, String), object, toJSON )
+import Data.Aeson ( Key, ToJSON, Value (Number, Object, String),
+  defaultOptions, genericToEncoding, genericToJSON, object, omitNothingFields,
+  toEncoding, toJSON )
+import Data.Aeson qualified as Aeson
 import Data.Aeson.Key ( fromString )
 import Data.Aeson.Types ( Pair, emptyObject )
 import Data.String.Conv ( toS )
@@ -35,14 +38,19 @@ instance ToJSON Stream
 
 data OllamaRequest = OllamaRequest
   { model :: Model
-  , system :: System
+  , system :: Maybe System
   , prompt :: Prompt
   , stream :: Stream
   , options :: Maybe Value
   }
   deriving Generic
 
-instance ToJSON OllamaRequest
+customOptions :: Aeson.Options
+customOptions = defaultOptions { omitNothingFields = True }
+
+instance ToJSON OllamaRequest where
+  toJSON     = genericToJSON customOptions
+  toEncoding = genericToEncoding customOptions
 
 
 mkLLMRequest :: Options -> TL.Text -> OllamaRequest
@@ -58,7 +66,7 @@ newtype Host = Host TL.Text
 defaultHost :: String
 defaultHost = "localhost:11434"
 
-newtype System = System (Maybe TL.Text)
+newtype System = System TL.Text
   deriving Generic
 
 instance ToJSON System
@@ -67,7 +75,7 @@ newtype RawOutput = RawOutput Bool
 
 data Options = Options
   { host :: Host
-  , system :: System
+  , system :: Maybe System
   , model :: Model
   , llmOptions :: LLMOptions
   , stream :: Stream

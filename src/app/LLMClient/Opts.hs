@@ -32,7 +32,8 @@ parser = Options
         <> value defaultHost
         )
       )
-  <*> ( System . fmap pack <$> optional ( strOption
+  -- NOTE: The inner <$> is for Maybe, the outer <$> is for Parser
+  <*> ( (System . pack <$>) <$> optional ( strOption
         (  long "system"
         <> short 's'
         <> metavar "STR"
