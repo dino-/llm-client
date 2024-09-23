@@ -16,8 +16,8 @@ import System.Environment ( getProgName )
 import Text.Heredoc ( here )
 
 import LLMClient.Common ( Host (..), Model (..), Options (Options),
-  RawOutput (..), Stream (..), System (..), convertOptions, defaultHost,
-  defaultModel )
+  RawOutput (..), Stream (..), System (..), Verbose (..), convertOptions,
+  defaultHost, defaultModel )
 
 
 {- HLINT ignore "Functor law" -}
@@ -65,6 +65,12 @@ parser = Options
         (  long "raw-output"
         <> short 'r'
         <> help "Output the entire JSON response from the LLM"
+        )
+      )
+  <*> ( Verbose <$> switch
+        (  long "verbose"
+        <> short 'v'
+        <> help "Enable verbose output. Note: All logging goes to stderr"
         )
       )
 

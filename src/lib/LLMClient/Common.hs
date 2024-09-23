@@ -14,6 +14,8 @@ import Data.String.Conv ( toS )
 import Data.Text.Lazy qualified as TL
 import GHC.Generics ( Generic )
 
+import LLMClient.System.Log ( Priority (DEBUG) )
+
 
 newtype Model = Model TL.Text
   deriving Generic
@@ -80,6 +82,7 @@ data Options = Options
   , llmOptions :: LLMOptions
   , stream :: Stream
   , rawOutput :: RawOutput
+  , verbose :: Verbose
   }
 
 
@@ -100,3 +103,12 @@ pairs' = map (convertTypes . (takeWhile (/= ':') &&& (tail . dropWhile (/= ':'))
 convertTypes :: (String, String) -> (Key, Value)
 convertTypes (keystr@"stop", valstr) = (fromString keystr, String . toS $ valstr)
 convertTypes (keystr, valstr) = (fromString keystr, Number . read $ valstr)
+
+
+newtype Verbose = Verbose Bool
+  deriving Show
+
+
+verbosityToPriority :: Verbose -> Maybe Priority
+verbosityToPriority (Verbose True) = Just DEBUG
+verbosityToPriority (Verbose False) = Nothing

@@ -3,18 +3,17 @@
 import Data.Text.Lazy.IO qualified as TL
 import System.IO ( stdin )
 
-import LLMClient.Common ( Options (host, rawOutput), mkLLMRequest )
+import LLMClient.Common ( Options (host, rawOutput, verbose), mkLLMRequest,
+  verbosityToPriority )
 import LLMClient.HTTP ( display, doCompletion )
 import LLMClient.Opts ( parseOpts )
 import LLMClient.System.Log ( infoM, initLogging, lname )
--- import LLMClient.System.Log ( Priority (DEBUG) )
 
 
 main :: IO ()
 main = do
   opts <- parseOpts
-  -- initLogging $ Just DEBUG
-  initLogging Nothing
+  initLogging . verbosityToPriority . verbose $ opts
   infoM lname "Logging configured"
   infoM lname "Args parsed"
 
