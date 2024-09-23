@@ -68,6 +68,7 @@ library
   build-depends:
       aeson
     , bytestring
+    , formatting
     , hslogger
     , lens-aeson
     , microlens

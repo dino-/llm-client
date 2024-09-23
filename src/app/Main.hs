@@ -3,7 +3,7 @@
 import Data.Text.Lazy.IO qualified as TL
 import System.IO ( stdin )
 
-import LLMClient.Common ( Options (rawOutput), mkLLMRequest )
+import LLMClient.Common ( Options (host, rawOutput), mkLLMRequest )
 import LLMClient.HTTP ( display, doCompletion )
 import LLMClient.Opts ( parseOpts )
 import LLMClient.System.Log ( infoM, initLogging, lname )
@@ -20,4 +20,4 @@ main = do
 
   promptText <- TL.hGetContents stdin
   let or' = mkLLMRequest opts promptText
-  doCompletion or' >>= display opts.rawOutput
+  doCompletion opts.host or' >>= display opts.rawOutput

@@ -6,17 +6,18 @@ import Data.Aeson.Lens ( key )
 import Data.ByteString.Lazy qualified as BL
 import Data.String.Conv ( toS )
 import Data.Text.IO qualified as TS
+import Formatting ( (%), formatToString, text )
 import Lens.Micro ( (^.), (^?) )
 import Network.Wreq ( post, responseBody )
 
-import LLMClient.Common ( OllamaRequest, RawOutput (..) )
+import LLMClient.Common ( Host (..), OllamaRequest, RawOutput (..) )
 import LLMClient.System.Log ( debugM, lname )
 
 
-doCompletion :: OllamaRequest -> IO BL.ByteString
-doCompletion or' = do
+doCompletion :: Host -> OllamaRequest -> IO BL.ByteString
+doCompletion (Host host) or' = do
   debugM lname . toS . encode $ or'
-  let url = "http://localhost:11434/api/generate"
+  let url = formatToString ("http://" % text % "/api/generate") host
   response <- post url $ toJSON or'
   pure $ response ^. responseBody
 
