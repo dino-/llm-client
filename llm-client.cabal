@@ -56,24 +56,24 @@ common lang
     -Wredundant-constraints
   build-depends:
       base >=3 && <5
+    , formatting
+    , text
 
 library
   import: lang
   exposed-modules:
-      LLMClient.Common
-      LLMClient.HTTP
-      LLMClient.System.Log
+    LLMClient.Common
+    LLMClient.HTTP
+    LLMClient.System.Log
   hs-source-dirs:
     src/lib
   build-depends:
       aeson
     , bytestring
-    , formatting
     , hslogger
     , lens-aeson
     , microlens
     , string-conv
-    , text
     , wreq
 
 executable llm-client
@@ -87,22 +87,7 @@ executable llm-client
   autogen-modules:
     Paths_llm_client
   build-depends:
-      formatting
     , heredoc
     , llm-client
     , optparse-applicative
     , prettyprinter
-    , text
-
--- test-suite basic-wrk-test-suite
---   import: lang
---   type: exitcode-stdio-1.0
---   main-is: Main.hs
---   hs-source-dirs:
---     src/test
---   ghc-options: -rtsopts -threaded -with-rtsopts=-N
---   build-depends:
---       llm-client
---     , tasty
---     , tasty-hunit
---     , tasty-quickcheck
