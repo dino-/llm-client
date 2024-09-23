@@ -89,7 +89,16 @@ parseOpts = do
 
 footer' :: InfoMod a
 footer' = footerDoc . Just . pretty . format content . pack . showVersion $ version
-  where content = [here|LLM OPTIONS
+  where content = [here|OVERVIEW
+
+This software expects the prompt string on STDIN and will respond with the LLM
+response on STDOUT
+
+example
+
+    $ echo "Why is the sky blue?" | llm-client -m 'some-fancy-model'
+
+LLM OPTIONS
 
 Some settings are communicated to the LLM as a map of options. Use them like this
 
@@ -109,6 +118,10 @@ Some useful options
                   value (e.g. 100) will give more diverse answers, while a
                   lower value (e.g. 10) will be more conservative.
                   Range 0 to 100
+    top_p         Works together with top-k. A higher value (e.g., 0.95) will   0.9
+                  lead to more diverse text, while a lower value (e.g., 0.5)
+                  will generate more focused and conservative text.
+                  Range unknown, guessing 0.0 to 1.0
 
 For the complete list of LLM options, see
 
