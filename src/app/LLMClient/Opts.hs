@@ -94,11 +94,11 @@ Some settings are communicated to the LLM as a map of options. Use them like thi
 
     -o temperature:0.2
 
-Some popular options:
+A popular option is 'temperature' which is a DOUBLE between 0.0 and 1.0 where
 
-    key               description
-    ----------------------------------------------
-    temperature       DOUBLE between 0.0 and 1.0
-    presence_penalty  DOUBLE between 0.0 and 1.0
+    0.0       deterministic
+    0.1 - 1.0 increasing creativity
+
+The default temperature is 0.8
 
 Version |] % t % "  Dino Morelli <dino@ui3.info>"
