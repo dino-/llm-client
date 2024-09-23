@@ -61,7 +61,7 @@ library
   import: lang
   exposed-modules:
       LLMClient.Common
-      LLMClient.Http
+      LLMClient.HTTP
   hs-source-dirs:
     src/lib
   build-depends:

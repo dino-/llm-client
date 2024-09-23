@@ -1,4 +1,4 @@
-module LLMClient.Http
+module LLMClient.HTTP
   where
 
 import Data.Aeson ( Value (String), toJSON )
