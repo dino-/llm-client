@@ -71,6 +71,7 @@ library
       aeson
     , bytestring
     , hslogger
+    , http-client
     , lens-aeson
     , microlens
     , string-conv
