@@ -7,7 +7,7 @@ module LLMClient.Opts
 
 import Data.Text.Lazy ( pack )
 import Data.Version ( showVersion )
-import Formatting ( (%), format, formatToString )
+import Formatting ( (%), (%+), format, formatToString, string )
 import Formatting.ShortFormatters ( t )
 import Options.Applicative
 import Paths_llm_client ( version )
@@ -17,13 +17,22 @@ import Text.Heredoc ( here )
 
 import LLMClient.Common ( Host (..), Model (..), Options (Options),
   RawOutput (..), Stream (..), System (..), Verbose (..), convertOptions,
-  defaultHost, defaultModel )
+  defaultHost, defaultModel, hostFromString )
+
+
+readHost :: ReadM Host
+readHost = eitherReader (\s ->
+  maybe
+    (Left $ formatToString ("Unable to parse" %+ string %+ "into host and port parts") s)
+    Right
+    $ hostFromString s
+  )
 
 
 {- HLINT ignore "Functor law" -}
 parser :: Parser Options
 parser = Options
-  <$> ( Host . pack <$> strOption
+  <$> ( option readHost
         (  long "host"
         <> short 'H'
         <> metavar "HOST:PORT"

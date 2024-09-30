@@ -11,7 +11,6 @@ import Data.Aeson.KeyMap qualified as A
 import Data.ByteString.Lazy qualified as BL
 import Data.Proxy ( Proxy (..) )
 import Data.String.Conv ( toS )
-import Data.Text.Lazy qualified as TL
 import Data.Text.IO qualified as TS
 import Formatting ( (%+), formatToString, string )
 import Network.HTTP.Client ( defaultManagerSettings, newManager )
@@ -46,23 +45,15 @@ completion = client api
 
 
 doCompletion :: Host -> OllamaRequest -> IO Value
-doCompletion host or' = do
+doCompletion (Host hostName port) or' = do
   debugM lname . toS . encode $ or'
   manager' <- newManager defaultManagerSettings
-  let (hostName, port) = splitHost host
   eres <- runClientM (completion or')
-    (mkClientEnv manager' (BaseUrl Http hostName port ""))
+    (mkClientEnv manager' (BaseUrl Http (toS hostName) port ""))
   case eres of
     Left err -> logAndExit $ show err
     Right v@(Object _) -> pure v
     Right somethingElse -> logAndExit $ show somethingElse
-
-
-splitHost :: Host -> (String, Int)
-splitHost (Host t) = (toS hostName, readInt portStr)
-  where
-    (hostName, portStr) = TL.breakOn ":" t
-    readInt = read . toS . TL.tail
 
 
 logAndExit :: String -> IO a

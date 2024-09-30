@@ -4,15 +4,19 @@ module LLMClient.Common
   where
 
 import Control.Arrow ( (&&&) )
+import Control.Monad ( when )
 import Data.Aeson ( Key, ToJSON, Value (Number, Object, String),
   defaultOptions, genericToEncoding, genericToJSON, object, omitNothingFields,
   toEncoding, toJSON )
 import Data.Aeson qualified as Aeson
 import Data.Aeson.Key ( fromString )
 import Data.Aeson.Types ( Pair, emptyObject )
+import Data.Maybe ( catMaybes )
 import Data.String.Conv ( toS )
 import Data.Text.Lazy qualified as TL
+import Formatting ( (%), formatToString, int, text )
 import GHC.Generics ( Generic )
+import Text.Read ( readMaybe )
 
 import LLMClient.System.Log ( Priority (DEBUG) )
 
@@ -63,10 +67,28 @@ mkLLMRequest opts promptText = OllamaRequest opts.model opts.system
     wrapMaybe _ = Nothing
 
 
-newtype Host = Host TL.Text
+splitAtColon :: String -> Maybe (String, String)
+splitAtColon combinedStr = do
+  let (leftSide, rightSide) = takeWhile (/= ':') &&& dropWhile (/= ':') $ combinedStr
+  when (null rightSide) Nothing
+  pure (leftSide, tail rightSide)
 
-defaultHost :: String
-defaultHost = "localhost:11434"
+
+data Host = Host TL.Text Int
+
+instance Show Host where
+  show (Host hostName port) = formatToString (text % ":" % int) hostName port
+
+
+defaultHost :: Host
+defaultHost = Host "localhost" 11434
+
+
+hostFromString :: String -> Maybe Host
+hostFromString combinedStr = do
+  (hostName, portStr) <- splitAtColon combinedStr
+  Host (toS hostName) <$> readMaybe portStr
+
 
 newtype System = System TL.Text
   deriving Generic
@@ -98,7 +120,7 @@ convertOptions :: [String] -> LLMOptions
 convertOptions = LLMOptions . object . pairs'
 
 pairs' :: [String] -> [Pair]
-pairs' = map (convertTypes . (takeWhile (/= ':') &&& (tail . dropWhile (/= ':'))))
+pairs' = map convertTypes . catMaybes . map splitAtColon
 
 convertTypes :: (String, String) -> (Key, Value)
 convertTypes (keystr@"stop", valstr) = (fromString keystr, String . toS $ valstr)
