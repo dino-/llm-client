@@ -32,7 +32,7 @@ readHost = eitherReader (\s ->
 {- HLINT ignore "Functor law" -}
 parser :: Parser Options
 parser = Options
-  <$> ( option readHost
+  <$> option readHost
         (  long "host"
         <> short 'H'
         <> metavar "HOST:PORT"
@@ -40,7 +40,6 @@ parser = Options
         <> showDefault
         <> value defaultHost
         )
-      )
   -- NOTE: The inner <$> is for Maybe, the outer <$> is for Parser
   <*> ( (System . pack <$>) <$> optional ( strOption
         (  long "system"

@@ -11,7 +11,7 @@ import Data.Aeson ( Key, ToJSON, Value (Number, Object, String),
 import Data.Aeson qualified as Aeson
 import Data.Aeson.Key ( fromString )
 import Data.Aeson.Types ( Pair, emptyObject )
-import Data.Maybe ( catMaybes )
+import Data.Maybe ( mapMaybe )
 import Data.String.Conv ( toS )
 import Data.Text.Lazy qualified as TL
 import Formatting ( (%), formatToString, int, text )
@@ -120,7 +120,7 @@ convertOptions :: [String] -> LLMOptions
 convertOptions = LLMOptions . object . pairs'
 
 pairs' :: [String] -> [Pair]
-pairs' = map convertTypes . catMaybes . map splitAtColon
+pairs' = map convertTypes . mapMaybe splitAtColon
 
 convertTypes :: (String, String) -> (Key, Value)
 convertTypes (keystr@"stop", valstr) = (fromString keystr, String . toS $ valstr)
