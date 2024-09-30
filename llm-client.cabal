@@ -72,10 +72,9 @@ library
     , bytestring
     , hslogger
     , http-client
-    , lens-aeson
-    , microlens
+    , servant
+    , servant-client
     , string-conv
-    , wreq
 
 executable llm-client
   import: lang

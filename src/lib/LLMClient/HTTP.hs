@@ -1,39 +1,68 @@
+{-# LANGUAGE DataKinds, TypeOperators #-}
+
 module LLMClient.HTTP
   ( display
   , doCompletion
   )
   where
 
-import Control.Exception ( tryJust )
-import Data.Aeson ( Value (String), encode, toJSON )
-import Data.Aeson.Lens ( key )
+import Data.Aeson ( Value (Object, String), encode )
+import Data.Aeson.KeyMap qualified as A
 import Data.ByteString.Lazy qualified as BL
+import Data.Proxy ( Proxy (..) )
 import Data.String.Conv ( toS )
+import Data.Text.Lazy qualified as TL
 import Data.Text.IO qualified as TS
-import Formatting ( (%), (%+), formatToString, string, text )
-import Lens.Micro ( (^.), (^?) )
-import Network.HTTP.Client ( HttpException (HttpExceptionRequest,
-  InvalidUrlException) )
-import Network.Wreq ( post, responseBody )
+import Formatting ( (%+), formatToString, string )
+import Network.HTTP.Client ( defaultManagerSettings, newManager )
+import Servant.API ( (:>), JSON, Post, ReqBody )
+import Servant.Client ( BaseUrl (..), Scheme (Http), ClientM, client,
+  mkClientEnv, runClientM )
 import System.Exit ( exitFailure )
 
 import LLMClient.Common ( Host (..), OllamaRequest, RawOutput (..) )
 import LLMClient.System.Log ( debugM, emergencyM, errorM, lname )
 
 
-doCompletion :: Host -> OllamaRequest -> IO BL.ByteString
-doCompletion (Host host) or' = do
+{- NOTE: The reason we've chosen Aeson's Value type for the response is we want
+   to do one of two things with these responses:
+
+   1. Display only the LLM response text (in the JSON Value's 'response' field)
+   2. Dump the entire JSON response as-is (the -r|--raw-output behavior)
+
+   We don't need to model the entire Ollama response JSON document to achieve these goals.
+-}
+type API = "api" :> "generate" :> ReqBody '[JSON] OllamaRequest :> Post '[JSON] Value
+
+-- A Proxy to our API
+api :: Proxy API
+api = Proxy
+
+
+completion
+  :: OllamaRequest  -- ^ Value for the request body
+  -> ClientM Value
+completion = client api
+
+
+doCompletion :: Host -> OllamaRequest -> IO Value
+doCompletion host or' = do
   debugM lname . toS . encode $ or'
-  let url = formatToString ("http://" % text % "/api/generate") host
-  eResponse <- tryJust acceptedExceptions . post url . toJSON $ or'
-  case eResponse of
-    Left (HttpExceptionRequest _ e) -> logAndExit $ show e
-    Left (InvalidUrlException _ e) -> logAndExit $ show e
-    Right response -> pure $ response ^. responseBody
+  manager' <- newManager defaultManagerSettings
+  let (hostName, port) = splitHost host
+  eres <- runClientM (completion or')
+    (mkClientEnv manager' (BaseUrl Http hostName port ""))
+  case eres of
+    Left err -> logAndExit $ show err
+    Right v@(Object _) -> pure v
+    Right somethingElse -> logAndExit $ show somethingElse
 
 
-acceptedExceptions :: Applicative f => HttpException -> f HttpException
-acceptedExceptions = pure
+splitHost :: Host -> (String, Int)
+splitHost (Host t) = (toS hostName, readInt portStr)
+  where
+    (hostName, portStr) = TL.breakOn ":" t
+    readInt = read . toS . TL.tail
 
 
 logAndExit :: String -> IO a
@@ -42,13 +71,13 @@ logAndExit msg = do
   exitFailure
 
 
-display :: RawOutput -> BL.ByteString -> IO ()
+display :: RawOutput -> Value -> IO ()
 
-display (RawOutput True) bs = BL.putStr bs
+display (RawOutput True) v = BL.putStr $ encode v <> "\n"
 
-display (RawOutput False) bs = case bs ^? key "response" of
-  (Just (String t)) -> TS.putStrLn t
-  badResponse -> do
-    emergencyM lname $
-      "Something unexpected happened, LLM didn't create a response:\n" <> show badResponse
-    exitFailure
+display (RawOutput False) (Object keyMap) = case A.lookup "response" keyMap of
+  Just (String t) -> TS.putStrLn t
+  Just somethingElse -> emergencyM lname $ show somethingElse
+  Nothing -> emergencyM lname $ show keyMap
+
+display _ somethingElse = emergencyM lname $ show somethingElse
