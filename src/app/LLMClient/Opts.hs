@@ -7,8 +7,8 @@ module LLMClient.Opts
 
 import Data.Text.Lazy ( pack )
 import Data.Version ( showVersion )
-import Formatting ( (%), (%+), format, formatToString, string )
-import Formatting.ShortFormatters ( t )
+import Formatting ( (%+), format, formatToString, string )
+import Formatting.ShortFormatters ( s )
 import Options.Applicative
 import Paths_llm_client ( version )
 import Prettyprinter ( pretty )
@@ -21,11 +21,12 @@ import LLMClient.Common ( Host (..), Model (..), Options (Options),
 
 
 readHost :: ReadM Host
-readHost = eitherReader (\s ->
+readHost = eitherReader (\hostPortStr ->
   maybe
-    (Left $ formatToString ("Unable to parse" %+ string %+ "into host and port parts") s)
+    (Left $ formatToString
+      ("Unable to parse" %+ string %+ "into host and port parts") hostPortStr)
     Right
-    $ hostFromString s
+    $ hostFromString hostPortStr
   )
 
 
@@ -85,7 +86,7 @@ parser = Options
 
 versionHelper :: String -> Parser (a -> a)
 versionHelper progName =
-  infoOption (formatToString (t % " " % t) (pack progName) (pack . showVersion $ version)) $ mconcat
+  infoOption (formatToString (s %+ s) progName (showVersion version)) $ mconcat
   [ long "version"
   , help "Show version information"
   , hidden
@@ -96,21 +97,33 @@ parseOpts :: IO Options
 parseOpts = do
   pn <- getProgName
   execParser $ info (parser <**> helper <**> versionHelper pn)
-    (  header (formatToString (t % " - Command line tool for interacting with an ollama server") (pack pn))
+    (  header (formatToString (s %+ "- Command line tool for interacting with an ollama server") pn)
     <> footer'
     )
 
 
 footer' :: InfoMod a
-footer' = footerDoc . Just . pretty . format content . pack . showVersion $ version
+footer' = footerDoc . Just . pretty . format content . showVersion $ version
   where content = [here|OVERVIEW
 
 This software expects the prompt string on STDIN and will respond with the LLM
 response on STDOUT
 
-example
+example usage
 
     $ echo "Why is the sky blue?" | llm-client -m 'some-fancy-model'
+
+WHY WAS THIS DONE?
+
+ollama ships with command-line ability to submit prompts and do completions:
+
+    $ ollama MODEL [PROMPT] ...
+
+but as far as I can see there's no easy way to use this method to change
+options like the temperature and seed. This software allows greater control
+over the options.
+
+    $ echo "Tell me a story" | llm-client -m 'amodel' -o temperature:0.2
 
 LLM OPTIONS
 
@@ -141,4 +154,4 @@ For the complete list of LLM options, see
 
 https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values
 
-Version |] % t % "  Dino Morelli <dino@ui3.info>"
+Version|] %+ s %+ " Dino Morelli <dino@ui3.info>"
