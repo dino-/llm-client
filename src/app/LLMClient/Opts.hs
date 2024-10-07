@@ -41,14 +41,6 @@ parser = Options
         <> showDefault
         <> value defaultHost
         )
-  -- NOTE: The inner <$> is for Maybe, the outer <$> is for Parser
-  <*> ( (System . pack <$>) <$> optional ( strOption
-        (  long "system"
-        <> short 's'
-        <> metavar "STR"
-        <> help "System parameter"
-        )
-      ))
   <*> ( Model . pack <$> strOption
         (  long "model"
         <> short 'm'
@@ -58,6 +50,14 @@ parser = Options
         <> value defaultModel
         )
       )
+  -- NOTE: The inner <$> is for Maybe, the outer <$> is for Parser
+  <*> ( (System . pack <$>) <$> optional ( strOption
+        (  long "system"
+        <> short 's'
+        <> metavar "STR"
+        <> help "System parameter"
+        )
+      ))
   <*> ( convertOptions <$> many ( strOption
         (  long "option"
         <> short 'o'

@@ -99,8 +99,8 @@ newtype RawOutput = RawOutput Bool
 
 data Options = Options
   { host :: Host
-  , system :: Maybe System
   , model :: Model
+  , system :: Maybe System
   , llmOptions :: LLMOptions
   , stream :: Stream
   , rawOutput :: RawOutput
